@@ -8,6 +8,7 @@ static void openGLinit(void);
 
 /* declaration of callback functions */
 static void on_display(void);
+static void on_keyboard(unsigned char key);
 
 /* declaration of tetrominos */
 // static void drawLtetromino(void);
@@ -25,6 +26,7 @@ int main(int argc, char **argv){
 
     /* initializing callback functions */
     glutDisplayFunc(on_display);
+    glutKeyboardFunc(on_keyboard);
 
     /* initializing openGL */
     openGLinit();
@@ -39,10 +41,20 @@ static void openGLinit(void){
     glClearColor(1, 0, 1, 0);
 }
 
+static void on_keyboard(unsigned char key){
+    switch(key){
+        /* exiting program on escape button */
+        case 27:
+            exit(EXIT_SUCCESS);
+            break;
+    }
+}
+
 static void on_display(void){
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    /* test example */
     glColor3f(0, 1, 1);
     glBegin(GL_POLYGON);
         glVertex3f(-0.5, -0.5, 0.0);

@@ -8,6 +8,21 @@
 int animation_ongoing = 0;
 int animation_parameter = 0;
 
+/* boundaries */
+#define X_FROM (-5)
+#define X_TO (5)
+#define Y_FROM (-5)
+#define Y_TO (5)
+#define Z_FROM (-5)
+#define Z_TO (10)
+
+/* lighting */
+GLfloat light_position[] = {15, 15, 15, 0};
+GLfloat light_diffuse[] = {0.7, 0.7, 0.7, 1};
+GLfloat light_ambient[] = {0.5, 0.5, 0.5, 1};
+GLfloat light_specular[] = {0.9, 0.9, 0.9, 1};
+GLfloat shininess = 30;
+
 /* declaration of initializing functions */
 static void openGLinit(void);
 
@@ -19,15 +34,9 @@ static void onTimer(int value);
 
 /* draw grid */
 static void drawGrid();
-#define X_FROM (-5)
-#define Y_FROM (-5)
-#define X_TO (5)
-#define Y_TO (5)
-#define Z_FROM (-5)
-#define Z_TO (10)
 
 /* declaration of tetrominos */
-/* static void drawLtetromino(); */
+static void drawOtetromino();
 
 int main(int argc, char **argv){
 
@@ -36,7 +45,7 @@ int main(int argc, char **argv){
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
     /* initializing window */
-    glutInitWindowSize(600, 600);
+    glutInitWindowSize(1920, 1080);
     glutInitWindowPosition(660, 240);
     glutCreateWindow("T3Dris");
 
@@ -123,11 +132,24 @@ static void onDisplay(void){
     /* placing eye */
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0, -8, 20, 0, 0, 0, 0, 1, 0);
+    gluLookAt(0, -10, 17, 0, 0, 0, 0, 1, 0);
+
+    /* lighting */
+    glShadeModel(GL_SMOOTH);
+	glEnable(GL_NORMALIZE);	
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0,GL_POSITION,light_position);
+	glLightfv(GL_LIGHT0,GL_DIFFUSE,light_diffuse);
+	glLightfv(GL_LIGHT0,GL_AMBIENT,light_ambient);
+	glLightfv(GL_LIGHT0,GL_SPECULAR,light_specular);
+
 
     glPushMatrix();
     drawGrid();
     glPopMatrix();
+
+    drawOtetromino();
 
     glutSwapBuffers();
 }
@@ -135,8 +157,8 @@ static void onDisplay(void){
 static void drawGrid(){
     /* dimesnsions: 10x10x15 */
     float x, y, z;
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glColor4f(1, 1, 1, 0.5);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     z = Z_FROM;
     y = Y_FROM;
@@ -198,3 +220,20 @@ static void drawGrid(){
     }
 
 }
+
+static void drawOtetromino(){
+    GLfloat Omaterial_diffuse[] = {1,0,0,1};
+    GLfloat Omaterial_ambient[] = {0.8, 0, 0, 1};
+    GLfloat Omaterial_specular[] = {0.9, 0.9, 0.9, 1};
+    glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,Omaterial_diffuse);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,Omaterial_ambient);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,Omaterial_specular);
+	glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS,shininess);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glPushMatrix();
+        glNormal3f(0, 1, 0);
+        glutSolidCube(1.5);
+    glPopMatrix();
+}
+

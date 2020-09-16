@@ -18,3 +18,5 @@ $(PROGRAM): $(OBJECTS)
 clean:
 	-rm src/*.o $(PROGRAM)
 
+play:
+	./$(PROGRAM)

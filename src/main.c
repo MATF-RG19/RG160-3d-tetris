@@ -17,10 +17,10 @@ int animation_parameter = 0;
 #define Z_TO (10)
 
 /* lighting */
-GLfloat light_position[] = {15, 15, 15, 0};
-GLfloat light_diffuse[] = {0.7, 0.7, 0.7, 1};
-GLfloat light_ambient[] = {0.5, 0.5, 0.5, 1};
-GLfloat light_specular[] = {0.9, 0.9, 0.9, 1};
+GLfloat lightPosition[] = {15, 15, 15, 0};
+GLfloat lightDiffuse[] = {0.7, 0.7, 0.7, 1};
+GLfloat lightAmbient[] = {0.5, 0.5, 0.5, 1};
+GLfloat lightSpecuar[] = {0.9, 0.9, 0.9, 1};
 GLfloat shininess = 30;
 
 /* declaration of initializing functions */
@@ -37,6 +37,12 @@ static void drawGrid();
 
 /* declaration of tetrominos */
 static void drawOtetromino();
+static void drawTtetromino();
+static void drawItetromino();
+static void drawLtetromino();
+static void drawJtetromino();
+static void drawStetromino();
+static void drawZtetromino();
 
 int main(int argc, char **argv){
 
@@ -67,6 +73,16 @@ static void openGLinit(void){
 
     glClearColor(0, 0, 0, 0);
     glEnable(GL_DEPTH_TEST);
+
+    /* lighting */
+	glLightfv(GL_LIGHT0,GL_POSITION,lightPosition);
+	glLightfv(GL_LIGHT0,GL_DIFFUSE,lightDiffuse);
+	glLightfv(GL_LIGHT0,GL_AMBIENT,lightAmbient);
+	glLightfv(GL_LIGHT0,GL_SPECULAR,lightSpecuar);
+    glShadeModel(GL_SMOOTH);
+	glEnable(GL_NORMALIZE);	
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 }
 
 static void onReshape(int width, int height){
@@ -134,28 +150,17 @@ static void onDisplay(void){
     glLoadIdentity();
     gluLookAt(0, -10, 17, 0, 0, 0, 0, 1, 0);
 
-    /* lighting */
-    glShadeModel(GL_SMOOTH);
-	glEnable(GL_NORMALIZE);	
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glLightfv(GL_LIGHT0,GL_POSITION,light_position);
-	glLightfv(GL_LIGHT0,GL_DIFFUSE,light_diffuse);
-	glLightfv(GL_LIGHT0,GL_AMBIENT,light_ambient);
-	glLightfv(GL_LIGHT0,GL_SPECULAR,light_specular);
 
-
-    glPushMatrix();
     drawGrid();
-    glPopMatrix();
 
-    drawOtetromino();
+    drawJtetromino();
+
 
     glutSwapBuffers();
 }
 
+/* drawing grid (dimensions : 10x10x15) */
 static void drawGrid(){
-    /* dimesnsions: 10x10x15 */
     float x, y, z;
     glColor4f(1, 1, 1, 0.5);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -222,13 +227,13 @@ static void drawGrid(){
 }
 
 static void drawOtetromino(){
-    GLfloat Omaterial_diffuse[] = {1,0,0,1};
-    GLfloat Omaterial_ambient[] = {0.8, 0, 0, 1};
-    GLfloat Omaterial_specular[] = {0.9, 0.9, 0.9, 1};
-    glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,Omaterial_diffuse);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,Omaterial_ambient);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,Omaterial_specular);
-	glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS,shininess);
+    GLfloat materialDiffuseO[] = {0.9, 0, 0, 1};
+    GLfloat materialAmbientO[] = {0.8, 0, 0, 1};
+    GLfloat materialSpecularO[] = {0.9, 0.9, 0.9, 1};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialDiffuseO);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, materialAmbientO);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, materialSpecularO);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
@@ -236,4 +241,89 @@ static void drawOtetromino(){
         glutSolidCube(1.5);
     glPopMatrix();
 }
+
+static void drawTtetromino(){
+    GLfloat materialDiffuseT[] = {0, 0.9, 0, 1};
+    GLfloat materialAmbientT[] = {0, 0.8, 0, 1};
+    GLfloat materialSpecularT[] = {0.9, 0.9, 0.9, 1};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialDiffuseT);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, materialAmbientT);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, materialSpecularT);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glPushMatrix();
+        glutSolidCube(1);
+        glTranslatef(0, 1, 0);
+        glScalef(3, 1, 1);
+        glutSolidCube(1);
+    glPopMatrix();
+}
+
+static void drawItetromino(){
+    GLfloat materialDiffuseI[] = {0, 0, 0.9, 1};
+    GLfloat materialAmbientI[] = {0, 0, 0.8, 1};
+    GLfloat materialSpecularI[] = {0.9, 0.9, 0.9, 1};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialDiffuseI);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, materialAmbientI);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, materialSpecularI);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glPushMatrix();
+        glScalef(4, 1, 1);
+        glutSolidCube(1);
+    glPopMatrix();
+}
+
+static void drawLtetromino(){
+    GLfloat materialDiffuseI[] = {0, 0.9, 0.9, 1};
+    GLfloat materialAmbientI[] = {0, 0.8, 0.8, 1};
+    GLfloat materialSpecularI[] = {0.9, 0.9, 0.9, 1};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialDiffuseI);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, materialAmbientI);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, materialSpecularI);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glPushMatrix();
+        glPushMatrix();
+        glScalef(2, 1, 1);
+        glutSolidCube(1);
+        glPopMatrix();
+
+        glPushMatrix();
+        glTranslatef(1, 1, 0);
+        glScalef(2, 1, 1);
+        glutSolidCube(1);
+        glPopMatrix();
+    
+    glPopMatrix();
+}
+
+static void drawJtetromino(){
+    GLfloat materialDiffuseJ[] = {0.9, 0.9, 0, 1};
+    GLfloat materialAmbientJ[] = {0.8, 0.8, 0, 1};
+    GLfloat materialSpecularJ[] = {0.9, 0.9, 0.9, 1};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialDiffuseJ);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, materialAmbientJ);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, materialSpecularJ);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glPushMatrix();
+        glPushMatrix();
+        glScalef(2, 1, 1);
+        glutSolidCube(1);
+        glPopMatrix();
+
+        glPushMatrix();
+        glTranslatef(-1, 1, 0);
+        glScalef(2, 1, 1);
+        glutSolidCube(1);
+        glPopMatrix();
+    
+    glPopMatrix();
+}
+
 

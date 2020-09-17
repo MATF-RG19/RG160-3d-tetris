@@ -2,18 +2,23 @@
 #include <stdlib.h>
 #include <time.h>
 #include <GL/glut.h>
+#include <math.h>
 
 #define TIMER_ID 0
 #define TIMER_INTERVAL 20
-int animation_ongoing = 0;
-int animation_parameter = 0;
+static int animation_ongoing = 0;
+static int animation_parameter = 0;
+
+/* camera rotations */
+static float rotateScene = 0;
+static float angle = 0.1;
 
 /* boundaries */
 #define X_FROM (-5)
 #define X_TO (5)
 #define Y_FROM (-5)
 #define Y_TO (5)
-#define Z_FROM (-5)
+#define Z_FROM (-3)
 #define Z_TO (10)
 
 /* lighting */
@@ -104,7 +109,8 @@ static void onKeyboard(unsigned char key, int x, int y){
         case 27:
             exit(EXIT_SUCCESS);
             break;
-
+        
+        /* glut animations */
         case 'p':
         case 'P':
             if (!animation_ongoing) {
@@ -112,21 +118,31 @@ static void onKeyboard(unsigned char key, int x, int y){
                 glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID);
             }
             break;
-
-        case 's':
-        case 'S':
+        case 'o':
+        case 'O':
             animation_ongoing = 0;
             break;
-        
-        case 'q':
-        case 'Q':
+        case 'u':
+        case 'U':
             animation_parameter = 0;
             break;
-        
+        case 'i':
+        case 'I':
+            animation_parameter++;
+            break; 
+
+        /* rotating scene */
+        case 'q':
+        case 'Q':
+            rotateScene += 0.1;
+            glutPostRedisplay();
+            break;
         case 'e':
         case 'E':
-            animation_parameter++;
-            break;
+            rotateScene -= 0.1;
+            glutPostRedisplay();
+            break;        
+
     }
 }
 
@@ -148,15 +164,15 @@ static void onDisplay(void){
     /* placing eye */
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    // gluLookAt(0, -10, 17, 0, 0, 0, 0, 1, 0);
+    gluLookAt(0 + sin(rotateScene)*15, 0 - cos(rotateScene)*15, 17, 0, 0, 0, 0, 1, 0);
 
-    //gledaj dole
-    gluLookAt(0, 0, 17, 0, 0, 0, 0, -1, 0);
+    /* birdeye
+    gluLookAt(0, 0, 17, 0, 0, 0, 0, -1, 0); */
 
     drawGrid();
     
     glPushMatrix();
-    glTranslatef(0, 0, -5);
+    glTranslatef(4, 4, -3);
     drawZtetromino();
     glPopMatrix();
         
@@ -164,7 +180,7 @@ static void onDisplay(void){
     glutSwapBuffers();
 }
 
-/* drawing grid (dimensions : 10x10x15) */
+/* drawing grid (dimensions : 10x10x13) */
 static void drawGrid(){
     float x, y, z;
     glColor4f(1, 1, 1, 0.5);

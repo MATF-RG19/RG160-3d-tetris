@@ -148,13 +148,18 @@ static void onDisplay(void){
     /* placing eye */
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0, -10, 17, 0, 0, 0, 0, 1, 0);
+    // gluLookAt(0, -10, 17, 0, 0, 0, 0, 1, 0);
 
+    //gledaj dole
+    gluLookAt(0, 0, 17, 0, 0, 0, 0, -1, 0);
 
     drawGrid();
-
-    drawJtetromino();
-
+    
+    glPushMatrix();
+    glTranslatef(0, 0, -5);
+    drawZtetromino();
+    glPopMatrix();
+        
 
     glutSwapBuffers();
 }
@@ -239,7 +244,7 @@ static void drawOtetromino(){
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
         glNormal3f(0, 1, 0);
-        glutSolidCube(1.5);
+        glutSolidCube(2);
     glPopMatrix();
 }
 
@@ -254,6 +259,8 @@ static void drawTtetromino(){
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
+        glNormal3f(0, 1, 0);
+        glTranslatef(0.5, -0.5, 0); //placing tetromino on integer coordinate
         glutSolidCube(1);
         glTranslatef(0, 1, 0);
         glScalef(3, 1, 1);
@@ -272,6 +279,8 @@ static void drawItetromino(){
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
+        glNormal3f(0, 1, 0);
+        glTranslatef(0, 0.5, 0); //placing tetromino on integer coordinates
         glScalef(4, 1, 1);
         glutSolidCube(1);
     glPopMatrix();
@@ -288,6 +297,8 @@ static void drawLtetromino(){
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
+        glNormal3f(0, 1, 0);
+        glTranslatef(-0.5, -0.5, 0); //placing tetromino on integer coordinates
         glutSolidCube(1);
         glTranslatef(1, 1, 0);
         glScalef(3, 1, 1);
@@ -306,6 +317,8 @@ static void drawJtetromino(){
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
+        glNormal3f(0, 1, 0);
+        glTranslatef(-0.5, 0.5, 0); //placing tetromino on integer coordinates
         glutSolidCube(1);
         glTranslatef(1, -1, 0);
         glScalef(3, 1, 1);
@@ -324,6 +337,8 @@ static void drawStetromino(){
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
+        glNormal3f(0, 1, 0);
+        glTranslatef(0, -0.5, 0); //placing tetromino on integer coordinates
         glPushMatrix();
         glScalef(2, 1, 1);
         glutSolidCube(1);
@@ -348,6 +363,8 @@ static void drawZtetromino(){
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
+        glNormal3f(0, 1, 0);
+        glTranslatef(0, -0.5, 0); //placing tetromino on integer coordinates
         glPushMatrix();
         glScalef(2, 1, 1);
         glutSolidCube(1);

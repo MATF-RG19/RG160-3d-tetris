@@ -1,7 +1,7 @@
 # T3Dtris
 
 #### controls:
-  start : enter\
-  pause : space\
-  rotate: q/e\
-  zoom  : z/c\
+start : enter\
+pause : space\
+rotate: q/e\
+zoom  : z/c\

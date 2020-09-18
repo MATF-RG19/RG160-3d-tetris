@@ -9,9 +9,14 @@
 static int animation_ongoing = 0;
 static int animation_parameter = 0;
 
-/* camera rotations */
-static float rotateScene = 0;
-static float angle = 0.1;
+/* declaration of initializing functions */
+static void openGLinit(void);
+
+/* declaration of callback functions */
+static void onDisplay(void);
+static void onKeyboard(unsigned char key, int x, int y);
+static void onReshape(int width, int height);
+static void onTimer(int value); 
 
 /* boundaries */
 #define X_FROM (-5)
@@ -21,6 +26,13 @@ static float angle = 0.1;
 #define Z_FROM (-3)
 #define Z_TO (10)
 
+/* camera rotations */
+float rotateScene = 0;
+static float angle = 0.05;
+//TODO
+float rotateSceneZ = 0;
+static float angleZ = 0.05;
+
 /* lighting */
 GLfloat lightPosition[] = {15, 15, 15, 0};
 GLfloat lightDiffuse[] = {0.7, 0.7, 0.7, 1};
@@ -28,14 +40,11 @@ GLfloat lightAmbient[] = {0.5, 0.5, 0.5, 1};
 GLfloat lightSpecuar[] = {0.9, 0.9, 0.9, 1};
 GLfloat shininess = 30;
 
-/* declaration of initializing functions */
-static void openGLinit(void);
-
-/* declaration of callback functions */
-static void onDisplay(void);
-static void onKeyboard(unsigned char key, int x, int y);
-static void onReshape(int width, int height);
-static void onTimer(int value); 
+/* random choosing tetromino */
+#define MAX_ARRAY_SIZE 256
+int randCounter = 0;
+int randArray[MAX_ARRAY_SIZE];
+void chooseTetromino();
 
 /* draw grid */
 static void drawGrid();
@@ -88,6 +97,13 @@ static void openGLinit(void){
 	glEnable(GL_NORMALIZE);	
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+
+    /* random array for picking tetromino TODO: MOVE */
+    srand(time(NULL));
+    for(randCounter = 0; randCounter < MAX_ARRAY_SIZE; randCounter++){
+        randArray[randCounter]=rand()/(RAND_MAX/7);
+    }
+    randCounter = 0;
 }
 
 static void onReshape(int width, int height){
@@ -134,14 +150,25 @@ static void onKeyboard(unsigned char key, int x, int y){
         /* rotating scene */
         case 'q':
         case 'Q':
-            rotateScene += 0.1;
+            rotateScene += angle;
             glutPostRedisplay();
             break;
         case 'e':
         case 'E':
-            rotateScene -= 0.1;
+            rotateScene -= angle;
             glutPostRedisplay();
-            break;        
+            break;
+        //TODO
+        case 'z':
+        case 'Z':
+            rotateSceneZ += angleZ;
+            glutPostRedisplay();
+            break;
+        case 'c':
+        case 'C':
+            rotateSceneZ -= angleZ;
+            glutPostRedisplay();
+            break;         
 
     }
 }
@@ -161,7 +188,7 @@ static void onDisplay(void){
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    /* placing eye */
+    /* placing eye, rotating eye */
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0 + sin(rotateScene)*15, 0 - cos(rotateScene)*15, 17, 0, 0, 0, 0, 1, 0);
@@ -170,20 +197,19 @@ static void onDisplay(void){
     gluLookAt(0, 0, 17, 0, 0, 0, 0, -1, 0); */
 
     drawGrid();
-    
+
     glPushMatrix();
-    glTranslatef(4, 4, -3);
-    drawZtetromino();
+    chooseTetromino();
     glPopMatrix();
         
-
     glutSwapBuffers();
 }
 
 /* drawing grid (dimensions : 10x10x13) */
 static void drawGrid(){
     float x, y, z;
-    glColor4f(1, 1, 1, 0.5);
+    glPushMatrix();
+    glColor4f(1, 1, 1, 1);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     z = Z_FROM;
@@ -241,10 +267,9 @@ static void drawGrid(){
             glVertex3f(x, y+1, z+1);
             glVertex3f(x, y, z+1);
             glEnd();        
-        }
-        
+        }   
     }
-
+    glPopMatrix();
 }
 
 /* drawing tetrominos with colorful material */
@@ -393,3 +418,37 @@ static void drawZtetromino(){
         glPopMatrix();
     glPopMatrix();
 }
+
+void chooseTetromino(){
+    glPushMatrix();
+        glTranslatef(X_FROM+1, Y_FROM+2, Z_FROM+1);
+        switch(randArray[randCounter]){
+             case 0:
+                 drawOtetromino();
+                 break;
+             case 1:
+                 drawTtetromino();
+                 break;
+             case 2:
+                 drawItetromino();
+                 break;
+             case 3:
+                 drawLtetromino();
+                 break;
+             case 4:
+                 drawJtetromino();
+                 break;
+             case 5:
+                 drawStetromino();
+                 break;
+             case 6:
+                 drawZtetromino();
+                 break;
+             }
+         randCounter++;
+         if(randCounter == MAX_ARRAY_SIZE-1){
+             randCounter = 0;
+        }
+    glPopMatrix();
+}
+    

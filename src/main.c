@@ -29,6 +29,8 @@ static void onTimer(int value);
 /* camera rotations */
 float rotateScene = 0;
 static float angle = 0.03;
+float sinScene;
+float cosScene;
 /* camera zoom */
 float zoomScene = 17;
 static float zoomZ = 0.2;
@@ -61,6 +63,8 @@ static void drawZtetromino();
 /* side functions */
 static void moveTetrominoToSpawn();
 static void stepTetrominoDown();
+static void setClippingPlanes();
+static void removeClippingPlanes();
 /* TODO */
 int isTetrominoMoving();
 int tetrominoMoving = 0;
@@ -203,69 +207,17 @@ static void onDisplay(void){
     /* placing eye, rotating eye */
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    float sinScene = sin(rotateScene);
-    float cosScene = cos(rotateScene);
+    sinScene = sin(rotateScene);
+    cosScene = cos(rotateScene);
     gluLookAt(0 + sinScene*15, 0 - cosScene*15, zoomScene, 0, 0, 0, 0, 1, 0);
 
     /* birdeye
     gluLookAt(0, 0, 17, 0, 0, 0, 0, -1, 0); */
     
     /* clipping planes for inside view */
-    GLdouble clipPlane0[] = {0, 1, 0, Y_TO-0.001}; 
-    GLdouble clipPlane1[] = {-1, 0, 0, X_TO-0.001};
-    GLdouble clipPlane2[] = {0, -1, 0, Y_TO-0.001};
-    GLdouble clipPlane3[] = {1, 0, 0, X_TO-0.001};
-    
-    /* picking side */
-    float changeAngleValue = sqrt(2)/2;
-    /* front side */
-    if(cosScene >= changeAngleValue){
-        glClipPlane(GL_CLIP_PLANE0, clipPlane0);
-        glEnable(GL_CLIP_PLANE0);
-    }
-    /* right side */
-    else if(sinScene <= -changeAngleValue){
-        glClipPlane(GL_CLIP_PLANE3, clipPlane3);
-        glEnable(GL_CLIP_PLANE3);
-    }
-    /* back side */
-    else if(cosScene <= -changeAngleValue){
-        glClipPlane(GL_CLIP_PLANE2, clipPlane2);
-        glEnable(GL_CLIP_PLANE2);
-    }
-    /* left side */
-    else if(sinScene >= changeAngleValue){
-        glClipPlane(GL_CLIP_PLANE1, clipPlane1);
-        glEnable(GL_CLIP_PLANE1);
-    }
+    setClippingPlanes();
 
-
-    if(0){
-    switch((int)rotateScene){
-        case 0:
-            /* front side */
-            glClipPlane(GL_CLIP_PLANE0, clipPlane0);
-            glEnable(GL_CLIP_PLANE0);
-            break;
-        case 1:
-            /* left side  */
-            glClipPlane(GL_CLIP_PLANE3, clipPlane3);
-            glEnable(GL_CLIP_PLANE3);
-            break;
-        case 2:
-            /* back side */
-            glClipPlane(GL_CLIP_PLANE2, clipPlane2);
-            glEnable(GL_CLIP_PLANE2);
-            break;
-        case 3:
-            /* right side  */
-            glClipPlane(GL_CLIP_PLANE1, clipPlane1);
-            glEnable(GL_CLIP_PLANE1);
-            break;
-    }
-    }
-
-
+    /* playfield */
     drawGrid();
 
     if(tetrominoMoving){
@@ -294,10 +246,7 @@ static void onDisplay(void){
         tetrominoMoving = 1;
     }
 
-    glDisable(GL_CLIP_PLANE0);
-    glDisable(GL_CLIP_PLANE1);
-    glDisable(GL_CLIP_PLANE2);
-    glDisable(GL_CLIP_PLANE3);
+    removeClippingPlanes();
 
     glutSwapBuffers();
 }
@@ -556,5 +505,42 @@ static void moveTetrominoToSpawn(){
 static void stepTetrominoDown(){
     glTranslatef(0, 0, -animationParameter);
 
+}
+
+static void setClippingPlanes(){
+    GLdouble clipPlane0[] = {0, 1, 0, Y_TO-0.001}; 
+    GLdouble clipPlane1[] = {-1, 0, 0, X_TO-0.001};
+    GLdouble clipPlane2[] = {0, -1, 0, Y_TO-0.001};
+    GLdouble clipPlane3[] = {1, 0, 0, X_TO-0.001};
+    
+    /* picking side */
+    float changeAngleValue = sqrt(2)/2;
+    /* front side */
+    if(cosScene >= changeAngleValue){
+        glClipPlane(GL_CLIP_PLANE0, clipPlane0);
+        glEnable(GL_CLIP_PLANE0);
+    }
+    /* right side */
+    else if(sinScene <= -changeAngleValue){
+        glClipPlane(GL_CLIP_PLANE3, clipPlane3);
+        glEnable(GL_CLIP_PLANE3);
+    }
+    /* back side */
+    else if(cosScene <= -changeAngleValue){
+        glClipPlane(GL_CLIP_PLANE2, clipPlane2);
+        glEnable(GL_CLIP_PLANE2);
+    }
+    /* left side */
+    else if(sinScene >= changeAngleValue){
+        glClipPlane(GL_CLIP_PLANE1, clipPlane1);
+        glEnable(GL_CLIP_PLANE1);
+    }
+}
+
+static void removeClippingPlanes(){
+    glDisable(GL_CLIP_PLANE0);
+    glDisable(GL_CLIP_PLANE1);
+    glDisable(GL_CLIP_PLANE2);
+    glDisable(GL_CLIP_PLANE3);
 }
     

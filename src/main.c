@@ -30,8 +30,8 @@ static void onTimer(int value);
 float rotateScene = 0;
 static float angle = 0.03;
 //TODO
-float rotateSceneZ = 17;
-static float zoomZ = 0.05;
+float zoomScene = 17;
+static float zoomZ = 0.1;
 
 /* lighting */
 GLfloat lightPosition[] = {15, 15, 15, 0};
@@ -57,6 +57,9 @@ static void drawLtetromino();
 static void drawJtetromino();
 static void drawStetromino();
 static void drawZtetromino();
+
+/* side functions */
+static void moveTetrominoToSpawn();
 
 int main(int argc, char **argv){
 
@@ -126,26 +129,26 @@ static void onKeyboard(unsigned char key, int x, int y){
             exit(EXIT_SUCCESS);
             break;
         
-        /* glut animations */
-        case 'p':
-        case 'P':
+        /* start program on enter button */
+        case 13:
             if (!animation_ongoing) {
                 animation_ongoing = 1;
                 glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID);
             }
             break;
-        case 'o':
-        case 'O':
+        /* pause program on space */
+        case 32:
             animation_ongoing = 0;
             break;
-        case 'u':
+        
+        /* case 'u':
         case 'U':
             animation_parameter = 0;
             break;
         case 'i':
         case 'I':
             animation_parameter++;
-            break; 
+            break;  */
 
         /* rotating scene */
         case 'q':
@@ -158,22 +161,22 @@ static void onKeyboard(unsigned char key, int x, int y){
             rotateScene -= angle;
             glutPostRedisplay();
             break;
-        //TODO: HACK: works like zoom, z value [5 - 17]
+
         /* zoom in */
         case 'z':
         case 'Z':
-            if(rotateSceneZ >= 5){
-                rotateSceneZ -= zoomZ;
-            }
+            if(zoomScene >= 5){
+                zoomScene -= zoomZ;
                 glutPostRedisplay();
+            }
                 break;
         /* zoom out */
         case 'c':
         case 'C':
-            if(rotateSceneZ <= 17){
-                rotateSceneZ += zoomZ;
-            }
+            if(zoomScene <= 17){
+                zoomScene += zoomZ;
                 glutPostRedisplay();
+            }
                 break;       
 
     }
@@ -197,12 +200,14 @@ static void onDisplay(void){
     /* placing eye, rotating eye */
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0 + sin(rotateScene)*15, 0 - cos(rotateScene)*15, rotateSceneZ, 0, 0, 0, 0, 1, 0);
+    gluLookAt(0 + sin(rotateScene)*15, 0 - cos(rotateScene)*15, zoomScene, 0, 0, 0, 0, 1, 0);
 
     /* birdeye
     gluLookAt(0, 0, 17, 0, 0, 0, 0, -1, 0); */
-
+    
+    glPushMatrix();
     drawGrid();
+    glPopMatrix();
 
     glPushMatrix();
     chooseTetromino();
@@ -307,7 +312,7 @@ static void drawTtetromino(){
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
         glNormal3f(0, 1, 0);
-        glTranslatef(0.5, -0.5, 0); //placing tetromino on integer coordinate
+        glTranslatef(0.5, -0.5, -0.5); //placing tetromino in center of integer coordinate 
         glutSolidCube(1);
         glTranslatef(0, 1, 0);
         glScalef(3, 1, 1);
@@ -316,8 +321,8 @@ static void drawTtetromino(){
 }
 
 static void drawItetromino(){
-    GLfloat materialDiffuseI[] = {0, 0, 0.9, 1};
-    GLfloat materialAmbientI[] = {0, 0, 0.8, 1};
+    GLfloat materialDiffuseI[] = {0, 0, 1, 1};
+    GLfloat materialAmbientI[] = {0, 0, 0.9, 1};
     GLfloat materialSpecularI[] = {0.9, 0.9, 0.9, 1};
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialDiffuseI);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, materialAmbientI);
@@ -327,7 +332,7 @@ static void drawItetromino(){
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
         glNormal3f(0, 1, 0);
-        glTranslatef(0, 0.5, 0); //placing tetromino on integer coordinates
+        glTranslatef(0, 0.5, -0.5); //placing tetromino in center of integer coordinates 
         glScalef(4, 1, 1);
         glutSolidCube(1);
     glPopMatrix();
@@ -345,7 +350,7 @@ static void drawLtetromino(){
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
         glNormal3f(0, 1, 0);
-        glTranslatef(-0.5, -0.5, 0); //placing tetromino on integer coordinates
+        glTranslatef(-0.5, -0.5, -0.5); //placing tetromino in center of integer coordinates 
         glutSolidCube(1);
         glTranslatef(1, 1, 0);
         glScalef(3, 1, 1);
@@ -365,7 +370,7 @@ static void drawJtetromino(){
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
         glNormal3f(0, 1, 0);
-        glTranslatef(-0.5, 0.5, 0); //placing tetromino on integer coordinates
+        glTranslatef(-0.5, 0.5, -0.5); //placing tetromino in center of integer coordinates 
         glutSolidCube(1);
         glTranslatef(1, -1, 0);
         glScalef(3, 1, 1);
@@ -385,7 +390,7 @@ static void drawStetromino(){
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
         glNormal3f(0, 1, 0);
-        glTranslatef(0, -0.5, 0); //placing tetromino on integer coordinates
+        glTranslatef(0, -0.5, -0.5); //placing tetromino in center of integer coordinates 
         glPushMatrix();
         glScalef(2, 1, 1);
         glutSolidCube(1);
@@ -411,7 +416,7 @@ static void drawZtetromino(){
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
         glNormal3f(0, 1, 0);
-        glTranslatef(0, -0.5, 0); //placing tetromino on integer coordinates
+        glTranslatef(0, -0.5, -0.5); //placing tetromino in center of integer coordinates 
         glPushMatrix();
         glScalef(2, 1, 1);
         glutSolidCube(1);
@@ -427,7 +432,7 @@ static void drawZtetromino(){
 
 void chooseTetromino(){
     glPushMatrix();
-        glTranslatef(X_FROM+1, Y_FROM+2, Z_FROM+1);
+        moveTetrominoToSpawn();
         switch(randArray[randCounter]){
              case 0:
                  drawOtetromino();
@@ -456,5 +461,9 @@ void chooseTetromino(){
              randCounter = 0;
         }
     glPopMatrix();
+}
+
+static void moveTetrominoToSpawn(){
+    glTranslatef(0, 0, Z_TO+1);
 }
     

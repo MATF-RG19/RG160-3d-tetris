@@ -5,12 +5,12 @@
 #include <math.h>
 
 #define TIMER_ID 0
-#define TIMER_INTERVAL 20
-static int animation_ongoing = 0;
-static int animation_parameter = 0;
+#define TIMER_INTERVAL 500
+static int animationOngoing = 0;
+static int animationParameter = 0;
 
 /* declaration of initializing functions */
-static void openGLinit(void);
+static void initialization(void);
 
 /* declaration of callback functions */
 static void onDisplay(void);
@@ -29,9 +29,9 @@ static void onTimer(int value);
 /* camera rotations */
 float rotateScene = 0;
 static float angle = 0.03;
-//TODO
+/* camera zoom */
 float zoomScene = 17;
-static float zoomZ = 0.1;
+static float zoomZ = 0.2;
 
 /* lighting */
 GLfloat lightPosition[] = {15, 15, 15, 0};
@@ -60,6 +60,9 @@ static void drawZtetromino();
 
 /* side functions */
 static void moveTetrominoToSpawn();
+/* TODO */
+int isTetrominoMoving();
+int tetrominoMoving = 0;
 
 int main(int argc, char **argv){
 
@@ -78,7 +81,7 @@ int main(int argc, char **argv){
     glutKeyboardFunc(onKeyboard);
 
     /* initializing openGL */
-    openGLinit();
+    initialization();
 
     /* main loop */
     glutMainLoop();
@@ -86,7 +89,7 @@ int main(int argc, char **argv){
     return 0;
 }
 
-static void openGLinit(void){
+static void initialization(void){
 
     glClearColor(0, 0, 0, 0);
     glEnable(GL_DEPTH_TEST);
@@ -101,7 +104,6 @@ static void openGLinit(void){
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 
-    /* random array for picking tetromino TODO: MOVE */
     srand(time(NULL));
     for(randCounter = 0; randCounter < MAX_ARRAY_SIZE; randCounter++){
         randArray[randCounter]=rand()/(RAND_MAX/7);
@@ -131,24 +133,15 @@ static void onKeyboard(unsigned char key, int x, int y){
         
         /* start program on enter button */
         case 13:
-            if (!animation_ongoing) {
-                animation_ongoing = 1;
+            if (!animationOngoing) {
+                animationOngoing = 1;
                 glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID);
             }
             break;
         /* pause program on space */
         case 32:
-            animation_ongoing = 0;
+            animationOngoing = 0;
             break;
-        
-        /* case 'u':
-        case 'U':
-            animation_parameter = 0;
-            break;
-        case 'i':
-        case 'I':
-            animation_parameter++;
-            break;  */
 
         /* rotating scene */
         case 'q':
@@ -187,9 +180,10 @@ static void onTimer(int value){
     if (value != TIMER_ID)
         return;
 
+    animationParameter++;
     glutPostRedisplay();
 
-    if (animation_ongoing)
+    if (animationOngoing)
         glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID);
 }
 
@@ -205,14 +199,24 @@ static void onDisplay(void){
     /* birdeye
     gluLookAt(0, 0, 17, 0, 0, 0, 0, -1, 0); */
     
-    glPushMatrix();
     drawGrid();
-    glPopMatrix();
 
-    glPushMatrix();
-    chooseTetromino();
-    glPopMatrix();
-        
+    if(tetrominoMoving){
+        //falling
+        animationParameter--;
+        tetrominoMoving = 0;
+    }
+    else{
+        glPushMatrix();
+        glTranslatef(0, 0, -animationParameter);
+        if(animationParameter >= 13){
+                animationParameter = 0;
+        }
+        chooseTetromino();
+        glPopMatrix();
+        tetrominoMoving = 1;
+    }
+
     glutSwapBuffers();
 }
 

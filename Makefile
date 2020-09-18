@@ -1,4 +1,4 @@
-PROGRAM = 3D_Tetris
+PROGRAM = T3Dtris
 SOURCES	= $(wildcard src/*.c)
 OBJECTS = $(SOURCES:.c=.o)
 CC      = gcc

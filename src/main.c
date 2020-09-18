@@ -60,6 +60,7 @@ static void drawZtetromino();
 
 /* side functions */
 static void moveTetrominoToSpawn();
+static void stepTetrominoDown();
 /* TODO */
 int isTetrominoMoving();
 int tetrominoMoving = 0;
@@ -175,6 +176,7 @@ static void onKeyboard(unsigned char key, int x, int y){
     }
 }
 
+/* tik tak */
 static void onTimer(int value){
 
     if (value != TIMER_ID)
@@ -202,13 +204,23 @@ static void onDisplay(void){
     drawGrid();
 
     if(tetrominoMoving){
+        /* 
         //falling
-        animationParameter--;
-        tetrominoMoving = 0;
+        //draw on static part
+        //draw moving tetromino translated: z(-1)
+        //when it touches static part set: tetrominoMoving = 0
+        */
+        glPushMatrix();
+        stepTetrominoDown();
+        if(animationParameter >= 13){
+                animationParameter = 0;
+        }
+        chooseTetromino();
+        glPopMatrix();
     }
     else{
         glPushMatrix();
-        glTranslatef(0, 0, -animationParameter);
+        stepTetrominoDown();
         if(animationParameter >= 13){
                 animationParameter = 0;
         }
@@ -469,5 +481,10 @@ void chooseTetromino(){
 
 static void moveTetrominoToSpawn(){
     glTranslatef(0, 0, Z_TO+1);
+}
+
+static void stepTetrominoDown(){
+    glTranslatef(0, 0, -animationParameter);
+
 }
     

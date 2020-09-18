@@ -28,10 +28,10 @@ static void onTimer(int value);
 
 /* camera rotations */
 float rotateScene = 0;
-static float angle = 0.05;
+static float angle = 0.03;
 //TODO
-float rotateSceneZ = 0;
-static float angleZ = 0.05;
+float rotateSceneZ = 17;
+static float zoomZ = 0.05;
 
 /* lighting */
 GLfloat lightPosition[] = {15, 15, 15, 0};
@@ -158,17 +158,23 @@ static void onKeyboard(unsigned char key, int x, int y){
             rotateScene -= angle;
             glutPostRedisplay();
             break;
-        //TODO
+        //TODO: HACK: works like zoom, z value [5 - 17]
+        /* zoom in */
         case 'z':
         case 'Z':
-            rotateSceneZ += angleZ;
-            glutPostRedisplay();
-            break;
+            if(rotateSceneZ >= 5){
+                rotateSceneZ -= zoomZ;
+            }
+                glutPostRedisplay();
+                break;
+        /* zoom out */
         case 'c':
         case 'C':
-            rotateSceneZ -= angleZ;
-            glutPostRedisplay();
-            break;         
+            if(rotateSceneZ <= 17){
+                rotateSceneZ += zoomZ;
+            }
+                glutPostRedisplay();
+                break;       
 
     }
 }
@@ -191,7 +197,7 @@ static void onDisplay(void){
     /* placing eye, rotating eye */
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0 + sin(rotateScene)*15, 0 - cos(rotateScene)*15, 17, 0, 0, 0, 0, 1, 0);
+    gluLookAt(0 + sin(rotateScene)*15, 0 - cos(rotateScene)*15, rotateSceneZ, 0, 0, 0, 0, 1, 0);
 
     /* birdeye
     gluLookAt(0, 0, 17, 0, 0, 0, 0, -1, 0); */
